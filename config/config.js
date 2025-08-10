@@ -1,2 +1,12 @@
-window.CONFIG={APPS_SCRIPT_URL:"https://script.google.com/macros/s/AKfycbwVOkDVL5e9vMLbU9RhDVO_0ZPqYqfAE7bFnSksSXxuv_A0Iz6wy_z-fKmB78JhRSjT/exec",SHEET_ID:"1HJ1ONrYianB-DImUJJ7OfSQV3gxA2VGGuOY9gRs1ytI"};
-window.build=(a,p={})=>((window.CONFIG.APPS_SCRIPT_URL||"").replace(/\/$/,""))+"?"+new URLSearchParams(Object.assign({action:a,sheetId:window.CONFIG.SHEET_ID},p)).toString();
+// Config de conexión
+window.CONFIG = {
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwAFdsy2GdJ2dUnuYYMJUprdVaT3cefp5LyMYl_iRlbQCSO1krDbVV24AbWeiiw9CnRNg/exec",
+  SHEET_ID: "1Syj1DXWyrm-9CdcNFGXLidLHF-MzuF0UfbCd-T2PhiE"
+};
+
+// Helper para construir URLs con action y sheetId
+window.build = function(action, extraParams={}) {
+  const base = (window.CONFIG.APPS_SCRIPT_URL||"").replace(/\/$/, "");
+  const p = new URLSearchParams(Object.assign({ action, sheetId: window.CONFIG.SHEET_ID }, extraParams));
+  return base + "?" + p.toString();
+};
