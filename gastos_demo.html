@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Docks – Cargar Gastos</title>
+  <script src="config/config.js"></script>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:24px;max-width:920px}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea,button{padding:8px;margin-top:4px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .ok{color:#0a7a0a} .err{color:#a00}
+    pre{background:#f7f7f7;padding:10px;border-radius:8px;overflow:auto}
+  </style>
+</head>
+<body>
+  <h1>Registrar gasto</h1>
+  <form id="gastoForm">
+    <div class="row">
+      <div>
+        <label>Fecha</label>
+        <input id="g_fecha" type="date" required>
+      </div>
+      <div>
+        <label>Medio</label>
+        <select id="g_medio">
+          <option>Efectivo</option>
+          <option>Transferencia</option>
+          <option>Tarjeta</option>
+          <option>Otro</option>
+        </select>
+      </div>
+    </div>
+    <label>Concepto</label>
+    <input id="g_concepto" placeholder="Detalle del gasto" required>
+
+    <div class="row">
+      <div>
+        <label>Importe</label>
+        <input id="g_importe" type="number" step="0.01" placeholder="0.00" required>
+      </div>
+      <div>
+        <label>Observaciones</label>
+        <input id="g_obs" placeholder="Opcional">
+      </div>
+    </div>
+
+    <button id="btnGuardar" type="submit">Guardar</button>
+  </form>
+
+  <h2>Últimos gastos</h2>
+  <button id="btnListar">Actualizar lista</button>
+  <pre id="out"></pre>
+
+<script>
+async function crearGasto(data){
+  const body = new URLSearchParams(Object.assign({tabla:'Gastos',ID:''}, data));
+  const r = await fetch(window.build('create'), { method:'POST', body });
+  return r.json();
+}
+async function listarGastos(){
+  const r = await fetch(window.build('list', { tabla:'Gastos' }));
+  return r.json();
+}
+
+document.getElementById('gastoForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = {
+    Fecha: document.getElementById('g_fecha').value,
+    Concepto: document.getElementById('g_concepto').value,
+    Importe: document.getElementById('g_importe').value,
+    Medio: document.getElementById('g_medio').value,
+    Observaciones: document.getElementById('g_obs').value
+  };
+  const res = await crearGasto(data);
+  const out = document.getElementById('out');
+  if(res.ok){ out.textContent = 'Guardado OK. ID: '+res.id; }
+  else { out.textContent = 'Error: ' + (res.error || JSON.stringify(res)); }
+});
+
+document.getElementById('btnListar').addEventListener('click', async()=>{
+  const res = await listarGastos();
+  document.getElementById('out').textContent = JSON.stringify(res, null, 2);
+});
+</script>
+</body>
+</html>
