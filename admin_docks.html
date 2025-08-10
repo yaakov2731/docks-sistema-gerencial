@@ -23,6 +23,15 @@
   </style>
 </head>
 <body>
+  <script>
+  const OK = sessionStorage.getItem("admin_ok")==="1";
+  if(!OK){
+    const pin = prompt("PIN de administración:");
+    if(pin==="docks2025"){ sessionStorage.setItem("admin_ok","1"); }
+    else { location.href="index.html"; }
+  }
+</script>
+
 <h1>Docks – Panel Admin</h1>
 
 <div class="bar">
