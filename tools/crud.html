@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CRUD Tester</title><script src="../config/config.js"></script>
+<select id=t><option>Locales</option><option>Expensas</option><option>Gastos</option><option>Reclamos</option><option>Sugerencias</option></select>
+<button id=l>Listar</button>
+<h3>Crear</h3><textarea id=c rows=4 cols=60>{"ID":""}</textarea><button id=cr>Crear</button>
+<h3>Actualizar</h3><input id=i placeholder="ID"><textarea id=u rows=4 cols=60>{}</textarea><button id=up>Actualizar</button>
+<h3>Borrar</h3><input id=d placeholder="ID"><button id=de>Borrar</button>
+<pre id=o></pre>
+<script>
+const o=document.getElementById('o');const t=id=>document.getElementById(id);
+async function post(a,p){const r=await fetch(window.build(a),{method:'POST',body:new URLSearchParams(p)});const x=await r.text();try{return JSON.parse(x)}catch(_){return {raw:x}}}
+document.getElementById('l').onclick=async()=>{o.textContent='...';try{const r=await fetch(window.build('list',{tabla:t('t').value}));o.textContent=await r.text()}catch(e){o.textContent='Error '+e.message}};
+document.getElementById('cr').onclick=async()=>{const data=JSON.parse(t('c').value||"{}");data.tabla=t('t').value;o.textContent=JSON.stringify(await post('create',data),null,2)};
+document.getElementById('up').onclick=async()=>{const data=JSON.parse(t('u').value||"{}");data.tabla=t('t').value;data.id=t('i').value;o.textContent=JSON.stringify(await post('update',data),null,2)};
+document.getElementById('de').onclick=async()=>{o.textContent=JSON.stringify(await post('delete',{tabla:t('t').value,id:t('d').value}),null,2)};
+</script>

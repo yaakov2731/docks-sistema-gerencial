@@ -1,0 +1,4 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Status conexión</title><script src="../config/config.js"></script>
+<button id=a>Probar connect</button><pre id=o></pre>
+<script>const o=document.getElementById('o');document.getElementById('a').onclick=async()=>{o.textContent='...';try{const r=await fetch(window.build('connect'));o.textContent=await r.text()}catch(e){o.textContent='Error '+e.message}}</script>

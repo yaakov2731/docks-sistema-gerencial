@@ -1,17 +1,8 @@
-/**
- * Apps Script API para el sistema gerencial Docks del Puerto Tigre.
- * Este archivo proporciona un esqueleto para peticiones HTTP GET y POST.
- * Reemplaza las funciones con la lógica real y la integración con Google Sheets.
- */
-
-function doGet(e) {
-  return ContentService.createTextOutput("Docks API en ejecución").setMimeType(ContentService.MimeType.TEXT);
-}
-
-function doPost(e) {
-  // Analiza el cuerpo JSON de la solicitud
-  var data = JSON.parse(e.postData.contents);
-  // TODO: Agregar lógica para manejar datos e interactuar con Google Sheets
-  return ContentService.createTextOutput(JSON.stringify({ estado: 'exitoso', recibido: data }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+function doGet(e){var a=(e.parameter.action||"").toLowerCase();var sid=e.parameter.sheetId||getId();if(a==="connect")return out({ok:true,sheetId:sid});if(a==="list")return out({ok:true,rows:list(sid,e.parameter.tabla)});return out({ok:false,error:"action inválida"})}
+function doPost(e){var a=(e.parameter.action||"").toLowerCase();var sid=e.parameter.sheetId||getId();if(a==="create")return out(createRow(sid,e.parameter.tabla,e.parameter));if(a==="update")return out(updateRow(sid,e.parameter.tabla,e.parameter.id,e.parameter));if(a==="delete")return out(deleteRow(sid,e.parameter.tabla,e.parameter.id));return out({ok:false,error:"action inválida"})}
+function getId(){return "1HJ1ONrYianB-DImUJJ7OfSQV3gxA2VGGuOY9gRs1ytI";} function ss(id){return SpreadsheetApp.openById(id);}
+function list(id,tabla){var sh=ss(id).getSheetByName(tabla);if(!sh)return[];var vals=sh.getDataRange().getValues();if(vals.length===0)return[];var head=vals.shift();return vals.filter(r=>r.join('')!=='').map(r=>Object.fromEntries(head.map((h,i)=>[String(h||('C'+(i+1))),r[i]])));}
+function createRow(id,tabla,obj){var sh=ss(id).getSheetByName(tabla);var head=sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];var newId=(obj.ID&&String(obj.ID).trim()!=="")?String(obj.ID):Utilities.getUuid();var row=head.map(h=>h==="ID"?newId:(obj[h]||""));sh.appendRow(row);return{ok:true,id:newId}}
+function updateRow(id,tabla,rowId,obj){var sh=ss(id).getSheetByName(tabla);var head=sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];var idx=head.indexOf("ID")+1;var rng=sh.getRange(2,idx,Math.max(sh.getLastRow()-1,0),1).getValues();var rowIdx=rng.findIndex(v=>String(v[0])===String(rowId));if(rowIdx<0)return{ok:false,error:"ID no encontrado"};var r=rowIdx+2;head.forEach((h,c)=>{if(h!=="ID"&&h in obj)sh.getRange(r,c+1).setValue(obj[h]);});return{ok:true,id:rowId}}
+function deleteRow(id,tabla,rowId){var sh=ss(id).getSheetByName(tabla);var head=sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];var idx=head.indexOf("ID")+1;var rng=sh.getRange(2,idx,Math.max(sh.getLastRow()-1,0),1).getValues();var rowIdx=rng.findIndex(v=>String(v[0])===String(rowId));if(rowIdx<0)return{ok:false,error:"ID no encontrado"};sh.deleteRow(rowIdx+2);return{ok:true,id:rowId}}
+function out(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);}
